@@ -86,7 +86,7 @@ class _ServiciosScreenState extends State<ServiciosScreen> {
                   const Spacer(),
                   Text(
                     _selectedCategoryId != null
-                        ? (_categories.where((c) => c.id == _selectedCategoryId).firstOrNull?.name ?? 'Pago de servicios')
+                        ? _categories.firstWhere((c) => c.id == _selectedCategoryId).name
                         : 'Pago de servicios',
                     style: GoogleFonts.urbanist(
                       fontSize: 16,
