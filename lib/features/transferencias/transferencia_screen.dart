@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/sayo_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../shared/data/mock_data.dart';
+import '../../shared/data/spei_participants.dart';
 
 class TransferenciaScreen extends StatefulWidget {
   const TransferenciaScreen({super.key});
@@ -34,6 +35,8 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> with SingleTi
   final _sayoConceptoCtrl = TextEditingController();
 
   String _selectedBank = '';
+  SpeiParticipant? _detectedBank; // Auto-detected from CLABE
+  SpeiParticipant? _selectedBankObj; // Selected bank for card tab
   bool _isProcessing = false;
   bool _isFavorite = false;
 
@@ -57,6 +60,7 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> with SingleTi
     for (final c in [_speiClabeCtrl, _speiMontoCtrl, _cardNumCtrl, _cardMontoCtrl, _sayoPhoneCtrl, _sayoMontoCtrl]) {
       c.addListener(_onFieldChange);
     }
+    _speiClabeCtrl.addListener(_detectBankFromClabe);
   }
 
   @override
@@ -77,6 +81,30 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> with SingleTi
     _sayoMontoCtrl.dispose();
     _sayoConceptoCtrl.dispose();
     super.dispose();
+  }
+
+  void _detectBankFromClabe() {
+    final bank = SpeiCatalog.fromClabe(_speiClabeCtrl.text);
+    if (bank != _detectedBank) {
+      setState(() => _detectedBank = bank);
+    }
+  }
+
+  void _showBankPicker() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _BankPickerSheet(
+        onSelected: (bank) {
+          setState(() {
+            _selectedBankObj = bank;
+            _selectedBank = bank.shortName;
+          });
+          Navigator.pop(context);
+        },
+      ),
+    );
   }
 
   void _goToConfirm() => setState(() => _step = 1);
@@ -106,6 +134,8 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> with SingleTi
       _sayoMontoCtrl.clear();
       _sayoConceptoCtrl.clear();
       _selectedBank = '';
+      _selectedBankObj = null;
+      _detectedBank = null;
       _isFavorite = false;
     });
   }
@@ -243,6 +273,51 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> with SingleTi
           ),
           const SizedBox(height: 20),
           _FormField(controller: _speiClabeCtrl, label: 'CLABE interbancaria', hint: '18 digitos', keyboardType: TextInputType.number, maxLength: 18, icon: Icons.account_balance_rounded),
+          if (_detectedBank != null) ...[
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: SayoColors.green.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: SayoColors.green.withValues(alpha: 0.2)),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.check_circle_rounded, color: SayoColors.green, size: 16),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '${_detectedBank!.shortName} — ${_detectedBank!.fullName}',
+                      style: GoogleFonts.urbanist(fontSize: 12, fontWeight: FontWeight.w600, color: SayoColors.green),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(color: SayoColors.green.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
+                    child: Text(_detectedBank!.clave, style: GoogleFonts.urbanist(fontSize: 10, fontWeight: FontWeight.w700, color: SayoColors.green)),
+                  ),
+                ],
+              ),
+            ),
+          ] else if (_speiClabeCtrl.text.length >= 3) ...[
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: SayoColors.orange.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: SayoColors.orange.withValues(alpha: 0.2)),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.warning_amber_rounded, color: SayoColors.orange, size: 16),
+                  const SizedBox(width: 8),
+                  Text('Institucion no reconocida', style: GoogleFonts.urbanist(fontSize: 12, fontWeight: FontWeight.w500, color: SayoColors.orange)),
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: 14),
           _FormField(controller: _speiBenefCtrl, label: 'Nombre del beneficiario', hint: 'Nombre completo', icon: Icons.person_outline_rounded),
           const SizedBox(height: 14),
@@ -281,23 +356,35 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> with SingleTi
           const SizedBox(height: 14),
           Text('Banco destino', style: GoogleFonts.urbanist(fontSize: 12, fontWeight: FontWeight.w600, color: SayoColors.grisMed)),
           const SizedBox(height: 6),
-          Wrap(
-            spacing: 8, runSpacing: 8,
-            children: ['BBVA', 'Banorte', 'Santander', 'HSBC', 'Banamex', 'Otro'].map((bank) {
-              final selected = _selectedBank == bank;
-              return GestureDetector(
-                onTap: () => setState(() => _selectedBank = bank),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: selected ? SayoColors.cafe : SayoColors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: selected ? SayoColors.cafe : SayoColors.beige, width: selected ? 1.5 : 0.5),
+          GestureDetector(
+            onTap: _showBankPicker,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+              decoration: BoxDecoration(
+                color: SayoColors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: _selectedBankObj != null ? SayoColors.cafe : SayoColors.beige, width: _selectedBankObj != null ? 1.5 : 0.5),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.account_balance_rounded, size: 20, color: _selectedBankObj != null ? SayoColors.cafe : SayoColors.grisLight),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _selectedBankObj != null
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(_selectedBankObj!.shortName, style: GoogleFonts.urbanist(fontSize: 15, fontWeight: FontWeight.w700, color: SayoColors.cafe)),
+                              Text(_selectedBankObj!.fullName, style: GoogleFonts.urbanist(fontSize: 11, color: SayoColors.grisMed)),
+                            ],
+                          )
+                        : Text('Seleccionar banco', style: GoogleFonts.urbanist(fontSize: 15, color: SayoColors.grisLight)),
                   ),
-                  child: Text(bank, style: GoogleFonts.urbanist(fontSize: 13, fontWeight: selected ? FontWeight.w700 : FontWeight.w500, color: selected ? SayoColors.white : SayoColors.grisMed)),
-                ),
-              );
-            }).toList(),
+                  Icon(Icons.keyboard_arrow_down_rounded, color: SayoColors.grisMed, size: 22),
+                ],
+              ),
+            ),
           ),
           const SizedBox(height: 14),
           _FormField(controller: _cardMontoCtrl, label: 'Monto', hint: '0.00', keyboardType: TextInputType.number, prefix: '\$ ', icon: Icons.attach_money_rounded),
@@ -450,6 +537,10 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> with SingleTi
                   _tabCtrl.index == 0 ? 'CLABE' : (_tabCtrl.index == 1 ? 'Tarjeta' : 'Telefono'),
                   _formatDest(_currentDestination),
                 ),
+                if (_detectedBank != null && _tabCtrl.index == 0) ...[
+                  _ConfirmDivider(),
+                  _ConfirmRow('Banco', _detectedBank!.shortName),
+                ],
                 if (_selectedBank.isNotEmpty && _tabCtrl.index == 1) ...[
                   _ConfirmDivider(),
                   _ConfirmRow('Banco', _selectedBank),
@@ -744,5 +835,203 @@ class _ConfirmDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Divider(height: 1, color: SayoColors.beige.withValues(alpha: 0.5));
+  }
+}
+
+// ── BANK PICKER BOTTOM SHEET ──
+
+class _BankPickerSheet extends StatefulWidget {
+  final void Function(SpeiParticipant) onSelected;
+  const _BankPickerSheet({required this.onSelected});
+
+  @override
+  State<_BankPickerSheet> createState() => _BankPickerSheetState();
+}
+
+class _BankPickerSheetState extends State<_BankPickerSheet> {
+  final _searchCtrl = TextEditingController();
+  List<SpeiParticipant> _results = [];
+  bool _showAll = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _results = SpeiCatalog.all;
+    _searchCtrl.addListener(_onSearch);
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  void _onSearch() {
+    setState(() {
+      _results = SpeiCatalog.search(_searchCtrl.text);
+      _showAll = _searchCtrl.text.isNotEmpty;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mainBanks = SpeiCatalog.mainBanks;
+    final displayList = _showAll ? _results : _results;
+
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.85,
+      decoration: const BoxDecoration(
+        color: SayoColors.cream,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 8),
+          Container(width: 40, height: 4, decoration: BoxDecoration(color: SayoColors.beige, borderRadius: BorderRadius.circular(2))),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+            child: Row(
+              children: [
+                Text('Seleccionar banco', style: GoogleFonts.urbanist(fontSize: 18, fontWeight: FontWeight.w800, color: SayoColors.gris)),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(color: SayoColors.cafe.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(8)),
+                  child: Text('${SpeiCatalog.all.length} instituciones', style: GoogleFonts.urbanist(fontSize: 11, fontWeight: FontWeight.w600, color: SayoColors.cafe)),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+            child: TextField(
+              controller: _searchCtrl,
+              style: GoogleFonts.urbanist(fontSize: 15, fontWeight: FontWeight.w600, color: SayoColors.gris),
+              decoration: InputDecoration(
+                hintText: 'Buscar banco por nombre o clave...',
+                prefixIcon: const Icon(Icons.search_rounded, size: 20, color: SayoColors.grisLight),
+                suffixIcon: _searchCtrl.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear_rounded, size: 18, color: SayoColors.grisLight),
+                        onPressed: () => _searchCtrl.clear(),
+                      )
+                    : null,
+                hintStyle: GoogleFonts.urbanist(fontSize: 15, color: SayoColors.grisLight),
+                filled: true,
+                fillColor: SayoColors.white,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: SayoColors.beige, width: 0.5)),
+                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: SayoColors.beige, width: 0.5)),
+                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: SayoColors.cafe, width: 1.5)),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: _searchCtrl.text.isEmpty
+                ? _buildGroupedList(mainBanks)
+                : _buildSearchResults(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGroupedList(List<SpeiParticipant> mainBanks) {
+    final banks = SpeiCatalog.all.where((p) => p.isBank).toList();
+    final others = SpeiCatalog.all.where((p) => !p.isBank).toList();
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+      children: [
+        _sectionHeader('Bancos principales'),
+        ...mainBanks.map((b) => _bankTile(b)),
+        const SizedBox(height: 16),
+        _sectionHeader('Todos los bancos (${banks.length})'),
+        ...banks.where((b) => !mainBanks.any((m) => m.clave == b.clave)).map((b) => _bankTile(b)),
+        const SizedBox(height: 16),
+        _sectionHeader('Otras instituciones (${others.length})'),
+        ...others.map((b) => _bankTile(b)),
+      ],
+    );
+  }
+
+  Widget _buildSearchResults() {
+    if (_results.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.search_off_rounded, size: 48, color: SayoColors.grisLight),
+            const SizedBox(height: 12),
+            Text('Sin resultados', style: GoogleFonts.urbanist(fontSize: 16, fontWeight: FontWeight.w600, color: SayoColors.grisMed)),
+            Text('Intenta con otro nombre o clave', style: GoogleFonts.urbanist(fontSize: 13, color: SayoColors.grisLight)),
+          ],
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+      itemCount: _results.length,
+      itemBuilder: (_, i) => _bankTile(_results[i]),
+    );
+  }
+
+  Widget _sectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, bottom: 6),
+      child: Text(title, style: GoogleFonts.urbanist(fontSize: 12, fontWeight: FontWeight.w700, color: SayoColors.grisMed, letterSpacing: 0.5)),
+    );
+  }
+
+  Widget _bankTile(SpeiParticipant bank) {
+    return GestureDetector(
+      onTap: () => widget.onSelected(bank),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: SayoColors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: SayoColors.beige.withValues(alpha: 0.5), width: 0.5),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 38, height: 38,
+              decoration: BoxDecoration(
+                color: bank.isBank ? SayoColors.cafe.withValues(alpha: 0.08) : SayoColors.blue.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(
+                child: Text(
+                  bank.shortName.substring(0, bank.shortName.length >= 2 ? 2 : 1).toUpperCase(),
+                  style: GoogleFonts.urbanist(fontSize: 13, fontWeight: FontWeight.w800, color: bank.isBank ? SayoColors.cafe : SayoColors.blue),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(bank.shortName, style: GoogleFonts.urbanist(fontSize: 14, fontWeight: FontWeight.w700, color: SayoColors.gris)),
+                  Text(bank.fullName, style: GoogleFonts.urbanist(fontSize: 11, color: SayoColors.grisMed), maxLines: 1, overflow: TextOverflow.ellipsis),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: SayoColors.beige.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(bank.clave, style: GoogleFonts.urbanist(fontSize: 11, fontWeight: FontWeight.w700, color: SayoColors.grisMed)),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
