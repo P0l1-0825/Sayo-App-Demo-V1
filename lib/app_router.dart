@@ -27,6 +27,12 @@ import 'features/admin/admin_reports_screen.dart';
 import 'features/admin/admin_user_movements_screen.dart';
 import 'features/admin/admin_ai_risk_screen.dart';
 import 'features/insights/financial_insights_screen.dart';
+import 'features/admin/admin_dispositions_screen.dart';
+import 'features/admin/admin_cards_ops_screen.dart';
+import 'features/admin/admin_conciliation_screen.dart';
+import 'features/admin/admin_config_screen.dart';
+import 'features/qr/qr_screen.dart';
+import 'features/marketplace/marketplace_screen.dart';
 import 'shared/widgets/main_shell.dart';
 
 final appRouter = GoRouter(
@@ -156,6 +162,30 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/insights',
       builder: (context, state) => const FinancialInsightsScreen(),
+    ),
+    GoRoute(
+      path: '/admin/disposiciones',
+      builder: (context, state) => const AdminDispositionsScreen(),
+    ),
+    GoRoute(
+      path: '/admin/tarjetas-ops',
+      builder: (context, state) => const AdminCardsOpsScreen(),
+    ),
+    GoRoute(
+      path: '/admin/conciliacion',
+      builder: (context, state) => const AdminConciliationScreen(),
+    ),
+    GoRoute(
+      path: '/admin/config',
+      builder: (context, state) => const AdminConfigScreen(),
+    ),
+    GoRoute(
+      path: '/qr',
+      builder: (context, state) => const QrScreen(),
+    ),
+    GoRoute(
+      path: '/marketplace',
+      builder: (context, state) => const MarketplaceScreen(),
     ),
     ShellRoute(
       builder: (context, state, child) => MainShell(child: child),

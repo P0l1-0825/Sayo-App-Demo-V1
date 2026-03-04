@@ -216,6 +216,55 @@ class AdminDashboardScreen extends StatelessWidget {
             ),
           ),
 
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+              child: Row(
+                children: [
+                  Expanded(child: _NavButton(
+                    icon: Icons.approval_rounded,
+                    label: 'Disposiciones',
+                    subtitle: 'Autorizaciones',
+                    color: SayoColors.green,
+                    onTap: () => context.push('/admin/disposiciones'),
+                  )),
+                  const SizedBox(width: 10),
+                  Expanded(child: _NavButton(
+                    icon: Icons.credit_card_rounded,
+                    label: 'Tarjetas',
+                    subtitle: 'Ops & fraude',
+                    color: SayoColors.blue,
+                    onTap: () => context.push('/admin/tarjetas-ops'),
+                  )),
+                ],
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+              child: Row(
+                children: [
+                  Expanded(child: _NavButton(
+                    icon: Icons.sync_alt_rounded,
+                    label: 'Conciliacion',
+                    subtitle: 'SPEI diario',
+                    color: SayoColors.orange,
+                    onTap: () => context.push('/admin/conciliacion'),
+                  )),
+                  const SizedBox(width: 10),
+                  Expanded(child: _NavButton(
+                    icon: Icons.settings_rounded,
+                    label: 'Config',
+                    subtitle: 'Sistema',
+                    color: SayoColors.grisMed,
+                    onTap: () => context.push('/admin/config'),
+                  )),
+                ],
+              ),
+            ),
+          ),
+
           // Users overview
           SliverToBoxAdapter(
             child: Padding(
