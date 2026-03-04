@@ -1,115 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import '../../core/theme/sayo_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../shared/data/mock_data.dart';
-
-class _CreditProduct {
-  final String id;
-  final String name;
-  final String shortName;
-  final String description;
-  final IconData icon;
-  final Color color;
-  final double rate;
-  final double maxAmount;
-  final double minAmount;
-  final int minPlazo;
-  final int maxPlazo;
-  final int plazoDivisions;
-  final double activeUsed;
-  final double activeLimit;
-
-  const _CreditProduct({
-    required this.id,
-    required this.name,
-    required this.shortName,
-    required this.description,
-    required this.icon,
-    required this.color,
-    required this.rate,
-    required this.maxAmount,
-    required this.minAmount,
-    required this.minPlazo,
-    required this.maxPlazo,
-    required this.plazoDivisions,
-    required this.activeUsed,
-    required this.activeLimit,
-  });
-
-  double get activeAvailable => activeLimit - activeUsed;
-  bool get hasActiveCredit => activeUsed > 0;
-  double get usedPercent => activeLimit > 0 ? activeUsed / activeLimit : 0;
-}
-
-final List<_CreditProduct> _creditProducts = [
-  const _CreditProduct(
-    id: 'adelanto',
-    name: 'Adelanto de Nomina',
-    shortName: 'Adelanto',
-    description: 'Recibe tu nomina por adelantado, deposito en minutos',
-    icon: Icons.flash_on_rounded,
-    color: SayoColors.orange,
-    rate: 0.12,
-    maxAmount: 30000,
-    minAmount: 1000,
-    minPlazo: 1,
-    maxPlazo: 3,
-    plazoDivisions: 2,
-    activeUsed: 15000,
-    activeLimit: 30000,
-  ),
-  const _CreditProduct(
-    id: 'nomina',
-    name: 'Credito sobre Nomina',
-    shortName: 'Sobre Nomina',
-    description: 'Credito respaldado por tu nomina, tasas preferenciales',
-    icon: Icons.account_balance_wallet_rounded,
-    color: SayoColors.green,
-    rate: 0.15,
-    maxAmount: 150000,
-    minAmount: 5000,
-    minPlazo: 6,
-    maxPlazo: 36,
-    plazoDivisions: 10,
-    activeUsed: 42000,
-    activeLimit: 150000,
-  ),
-  const _CreditProduct(
-    id: 'simple',
-    name: 'Credito Simple',
-    shortName: 'Simple',
-    description: 'Credito flexible para lo que necesites',
-    icon: Icons.payments_rounded,
-    color: SayoColors.blue,
-    rate: 0.18,
-    maxAmount: 500000,
-    minAmount: 10000,
-    minPlazo: 3,
-    maxPlazo: 48,
-    plazoDivisions: 9,
-    activeUsed: 0,
-    activeLimit: 500000,
-  ),
-  const _CreditProduct(
-    id: 'revolvente',
-    name: 'Credito Revolvente',
-    shortName: 'Revolvente',
-    description: 'Linea de credito reutilizable, paga y vuelve a disponer',
-    icon: Icons.autorenew_rounded,
-    color: SayoColors.purple,
-    rate: 0.22,
-    maxAmount: 200000,
-    minAmount: 5000,
-    minPlazo: 1,
-    maxPlazo: 12,
-    plazoDivisions: 11,
-    activeUsed: 28000,
-    activeLimit: 200000,
-  ),
-];
+import 'credit_product_model.dart';
 
 class CreditoScreen extends StatefulWidget {
   const CreditoScreen({super.key});
@@ -123,12 +20,12 @@ class _CreditoScreenState extends State<CreditoScreen> {
   double _simAmount = 10000;
   int _simPlazo = 6;
 
-  _CreditProduct get _product => _creditProducts[_selectedProduct];
+  CreditProduct get _product => creditProducts[_selectedProduct];
 
   void _onProductChanged(int index) {
     setState(() {
       _selectedProduct = index;
-      final p = _creditProducts[index];
+      final p = creditProducts[index];
       _simAmount = (p.minAmount + p.activeAvailable) / 2;
       _simAmount = _simAmount.clamp(p.minAmount, p.activeAvailable > 0 ? p.activeAvailable : p.maxAmount);
       _simPlazo = ((p.minPlazo + p.maxPlazo) / 2).round();
@@ -175,140 +72,22 @@ class _CreditoScreenState extends State<CreditoScreen> {
     });
   }
 
-  void _showDisponerSheet() {
-    final rateStr = '${(_product.rate * 100).toStringAsFixed(1)}%';
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => Container(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-        decoration: const BoxDecoration(
-          color: SayoColors.cream,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40, height: 4,
-                decoration: BoxDecoration(color: SayoColors.beige, borderRadius: BorderRadius.circular(2)),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Confirmar ${_product.shortName}',
-                style: GoogleFonts.urbanist(fontSize: 18, fontWeight: FontWeight.w800, color: SayoColors.gris),
-              ),
-              const SizedBox(height: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: _product.color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  _product.name,
-                  style: GoogleFonts.urbanist(fontSize: 12, fontWeight: FontWeight.w600, color: _product.color),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: SayoColors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: SayoColors.beige, width: 0.5),
-                ),
-                child: Column(
-                  children: [
-                    _SummaryRow('Monto a disponer', formatMoney(_simAmount)),
-                    _SummaryRow('Plazo', '$_simPlazo meses'),
-                    _SummaryRow('Pago mensual', formatMoney(_monthlyPayment)),
-                    _SummaryRow('Tasa anual', rateStr),
-                    _SummaryRow('Total a pagar', formatMoney(_monthlyPayment * _simPlazo)),
-                    const Divider(height: 16),
-                    _SummaryRow('Deposito a CLABE', formatClabe(MockUser.clabe)),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _showSuccess();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _product.color,
-                    foregroundColor: SayoColors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                  ),
-                  child: Text(
-                    'Confirmar disposicion',
-                    style: GoogleFonts.urbanist(fontSize: 16, fontWeight: FontWeight.w700),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('Cancelar', style: GoogleFonts.urbanist(fontSize: 14, fontWeight: FontWeight.w600, color: SayoColors.grisMed)),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  void _disponer() {
+    if (_product.id == 'adelanto') {
+      context.push('/adelanto');
+    } else {
+      context.push('/credito/disponer', extra: {
+        'productId': _product.id,
+        'amount': _simAmount,
+        'plazo': _simPlazo,
+      });
+    }
   }
 
-  void _showSuccess() {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        backgroundColor: SayoColors.cream,
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 64, height: 64,
-              decoration: BoxDecoration(
-                color: _product.color.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.check_rounded, size: 36, color: _product.color),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Disposicion exitosa',
-              style: GoogleFonts.urbanist(fontSize: 18, fontWeight: FontWeight.w800, color: SayoColors.gris),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Se depositaron ${formatMoney(_simAmount)} a tu cuenta CLABE. El deposito se reflejara en minutos.',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.urbanist(fontSize: 13, color: SayoColors.grisMed),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _product.color,
-                  foregroundColor: SayoColors.white,
-                ),
-                child: const Text('Entendido'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+  void _pagar() {
+    context.push('/credito/pagar', extra: {
+      'productId': _product.id,
+    });
   }
 
   void _showPaymentDetail(CreditPayment p) {
@@ -397,14 +176,7 @@ class _CreditoScreenState extends State<CreditoScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Pago anticipado #${p.number} procesado'),
-                          backgroundColor: SayoColors.green,
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        ),
-                      );
+                      _pagar();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: SayoColors.cafe,
@@ -412,7 +184,7 @@ class _CreditoScreenState extends State<CreditoScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
-                    child: Text('Pagar anticipadamente', style: GoogleFonts.urbanist(fontSize: 15, fontWeight: FontWeight.w700)),
+                    child: Text('Realizar pago', style: GoogleFonts.urbanist(fontSize: 15, fontWeight: FontWeight.w700)),
                   ),
                 ),
               ],
@@ -549,9 +321,9 @@ class _CreditoScreenState extends State<CreditoScreen> {
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: _creditProducts.length,
+                itemCount: creditProducts.length,
                 itemBuilder: (context, i) {
-                  final p = _creditProducts[i];
+                  final p = creditProducts[i];
                   final selected = i == _selectedProduct;
                   return GestureDetector(
                     onTap: () => _onProductChanged(i),
@@ -715,79 +487,121 @@ class _CreditoScreenState extends State<CreditoScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Aun no tienes un credito activo de este tipo. Usa el simulador para cotizar y disponer.',
+                        _product.id == 'simple'
+                            ? 'Solicita tu credito simple y recibe respuesta en 24-48 horas. Usa el simulador para cotizar.'
+                            : 'Aun no tienes un credito activo de este tipo. Usa el simulador para cotizar y disponer.',
                         textAlign: TextAlign.center,
                         style: GoogleFonts.urbanist(fontSize: 13, color: SayoColors.grisMed),
                       ),
+                      if (_product.id == 'simple') ...[
+                        const SizedBox(height: 14),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: _disponer,
+                            icon: const Icon(Icons.description_rounded, size: 18),
+                            label: Text('Solicitar Credito', style: GoogleFonts.urbanist(fontSize: 14, fontWeight: FontWeight.w700)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _product.color,
+                              foregroundColor: SayoColors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
               ),
             ),
 
-          // Next payment (if active credit)
+          // Next payment + Pagar button (if active credit)
           if (_product.hasActiveCredit && payments.isNotEmpty)
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                child: GestureDetector(
-                  onTap: _showNextPaymentDetail,
-                  child: Builder(
-                    builder: (context) {
-                      final nextP = payments.firstWhere((p) => !p.isPaid, orElse: () => payments.last);
-                      final daysUntil = nextP.date.difference(DateTime.now()).inDays;
-                      return Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [_product.color.withValues(alpha: 0.06), _product.color.withValues(alpha: 0.02)],
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: _product.color.withValues(alpha: 0.15)),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: _product.color.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(12),
+                child: Column(
+                  children: [
+                    GestureDetector(
+                      onTap: _showNextPaymentDetail,
+                      child: Builder(
+                        builder: (context) {
+                          final nextP = payments.firstWhere((p) => !p.isPaid, orElse: () => payments.last);
+                          final daysUntil = nextP.date.difference(DateTime.now()).inDays;
+                          return Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [_product.color.withValues(alpha: 0.06), _product.color.withValues(alpha: 0.02)],
                               ),
-                              child: Icon(Icons.calendar_today_rounded, color: _product.color, size: 20),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: _product.color.withValues(alpha: 0.15)),
                             ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Proximo pago', style: GoogleFonts.urbanist(fontSize: 12, color: SayoColors.grisMed)),
-                                  Text(
-                                    formatMoney(nextP.total),
-                                    style: GoogleFonts.urbanist(fontSize: 20, fontWeight: FontWeight.w800, color: _product.color),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                            child: Row(
                               children: [
-                                Text(
-                                  formatDate(nextP.date),
-                                  style: GoogleFonts.urbanist(fontSize: 13, fontWeight: FontWeight.w600, color: SayoColors.gris),
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: _product.color.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Icon(Icons.calendar_today_rounded, color: _product.color, size: 20),
                                 ),
-                                Text(
-                                  'En $daysUntil dias',
-                                  style: GoogleFonts.urbanist(fontSize: 11, color: _product.color, fontWeight: FontWeight.w600),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Proximo pago', style: GoogleFonts.urbanist(fontSize: 12, color: SayoColors.grisMed)),
+                                      Text(
+                                        formatMoney(nextP.total),
+                                        style: GoogleFonts.urbanist(fontSize: 20, fontWeight: FontWeight.w800, color: _product.color),
+                                      ),
+                                    ],
+                                  ),
                                 ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      formatDate(nextP.date),
+                                      style: GoogleFonts.urbanist(fontSize: 13, fontWeight: FontWeight.w600, color: SayoColors.gris),
+                                    ),
+                                    Text(
+                                      'En $daysUntil dias',
+                                      style: GoogleFonts.urbanist(fontSize: 11, color: _product.color, fontWeight: FontWeight.w600),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(width: 4),
+                                const Icon(Icons.chevron_right_rounded, size: 20, color: SayoColors.grisMed),
                               ],
                             ),
-                            const SizedBox(width: 4),
-                            const Icon(Icons.chevron_right_rounded, size: 20, color: SayoColors.grisMed),
-                          ],
+                          );
+                        },
+                      ),
+                    ),
+
+                    // Pagar button
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: _pagar,
+                        icon: Icon(Icons.payment_rounded, size: 18, color: _product.color),
+                        label: Text(
+                          'Realizar pago',
+                          style: GoogleFonts.urbanist(fontSize: 14, fontWeight: FontWeight.w700, color: _product.color),
                         ),
-                      );
-                    },
-                  ),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: _product.color, width: 1.5),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -919,7 +733,7 @@ class _CreditoScreenState extends State<CreditoScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _showDisponerSheet,
+                        onPressed: _disponer,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _product.color,
                           foregroundColor: SayoColors.white,
@@ -927,7 +741,7 @@ class _CreditoScreenState extends State<CreditoScreen> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         ),
                         child: Text(
-                          'Disponer ${_product.shortName}',
+                          _product.needsApplication ? 'Solicitar ${_product.shortName}' : 'Disponer ${_product.shortName}',
                           style: GoogleFonts.urbanist(fontSize: 15, fontWeight: FontWeight.w700),
                         ),
                       ),
