@@ -11,6 +11,7 @@ import 'features/perfil/perfil_screen.dart';
 import 'features/servicios/servicios_screen.dart';
 import 'features/servicios/pago_flow_screen.dart';
 import 'features/transferencias/transferencia_screen.dart';
+import 'features/adelanto/adelanto_screen.dart';
 import 'shared/widgets/main_shell.dart';
 
 final appRouter = GoRouter(
@@ -35,6 +36,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/transferir',
       builder: (context, state) => const TransferenciaScreen(),
+    ),
+    GoRoute(
+      path: '/adelanto',
+      builder: (context, state) => const AdelantoScreen(),
     ),
     GoRoute(
       path: '/servicios',

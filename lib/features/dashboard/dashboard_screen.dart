@@ -254,7 +254,7 @@ class DashboardScreen extends StatelessWidget {
       case 'Cobrar QR':
         _showQRSheet(context);
       case 'Nomina':
-        _showNominaSheet(context);
+        context.push('/adelanto');
     }
   }
 

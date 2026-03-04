@@ -146,6 +146,15 @@ final List<CreditPayment> mockPayments = List.generate(12, (i) {
   );
 });
 
+class MockNomina {
+  static const double salarioQuincenal = 18500.00;
+  static const double porcentajeDisponible = 0.70;
+  static double get montoMaximo => salarioQuincenal * porcentajeDisponible;
+  static const String empresa = 'Solvendom Technologies';
+  static const String proximoDeposito = '7 de marzo, 2026';
+  static const String fechaDescuento = '15 de marzo, 2026';
+}
+
 class QuickAction {
   final String label;
   final IconData icon;
