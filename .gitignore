@@ -47,4 +47,3 @@ app.*.map.json
 # Flutter generated
 .flutter-plugins
 .dart_tool/
-pubspec.lock
