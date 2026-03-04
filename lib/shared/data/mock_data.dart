@@ -155,6 +155,34 @@ class MockNomina {
   static const String fechaDescuento = '15 de marzo, 2026';
 }
 
+class MockEmployment {
+  static const String empresa = 'Solvendom Technologies';
+  static const String puesto = 'Ingeniero de Software Sr.';
+  static const double salarioMensual = 37000.00;
+  static const int antiguedadMeses = 28;
+  static const String tipoContrato = 'Indefinido';
+  static const String rfc = 'BEGO920815XX1';
+  static const String nss = '1234567890';
+}
+
+class MockCreditApplication {
+  static const List<String> purposes = [
+    'Capital de trabajo',
+    'Compra de equipo',
+    'Remodelacion',
+    'Consolidacion de deudas',
+    'Gastos personales',
+    'Otro',
+  ];
+
+  static const List<Map<String, dynamic>> documents = [
+    {'name': 'Identificacion oficial (INE)', 'status': 'verified', 'icon': '🪪'},
+    {'name': 'Comprobante de domicilio', 'status': 'verified', 'icon': '🏠'},
+    {'name': 'Comprobante de ingresos', 'status': 'verified', 'icon': '💰'},
+    {'name': 'Estado de cuenta bancario', 'status': 'pending', 'icon': '🏦'},
+  ];
+}
+
 class QuickAction {
   final String label;
   final IconData icon;

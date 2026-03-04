@@ -12,6 +12,9 @@ import 'features/servicios/servicios_screen.dart';
 import 'features/servicios/pago_flow_screen.dart';
 import 'features/transferencias/transferencia_screen.dart';
 import 'features/adelanto/adelanto_screen.dart';
+import 'features/credito/credito_flow_screen.dart';
+import 'features/credito/credito_pago_screen.dart';
+import 'features/credito/credit_product_model.dart';
 import 'shared/widgets/main_shell.dart';
 
 final appRouter = GoRouter(
@@ -40,6 +43,34 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/adelanto',
       builder: (context, state) => const AdelantoScreen(),
+    ),
+    GoRoute(
+      path: '/credito/disponer',
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>? ?? {};
+        final productId = extra['productId'] as String? ?? 'nomina';
+        final product = creditProducts.firstWhere(
+          (p) => p.id == productId,
+          orElse: () => creditProducts[1],
+        );
+        return CreditoFlowScreen(
+          product: product,
+          initialAmount: (extra['amount'] as num?)?.toDouble() ?? product.minAmount,
+          initialPlazo: (extra['plazo'] as num?)?.toInt() ?? product.minPlazo,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/credito/pagar',
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>? ?? {};
+        final productId = extra['productId'] as String? ?? 'nomina';
+        final product = creditProducts.firstWhere(
+          (p) => p.id == productId,
+          orElse: () => creditProducts[1],
+        );
+        return CreditoPagoScreen(product: product);
+      },
     ),
     GoRoute(
       path: '/servicios',
