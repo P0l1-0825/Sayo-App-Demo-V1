@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/sayo_colors.dart';
 import '../../core/utils/formatters.dart';
@@ -557,6 +558,42 @@ class _PerfilScreenState extends State<PerfilScreen> {
                     _InfoRow('Institucion', 'Solvendom (SAYO)'),
                     _InfoRow('Telefono', MockUser.phone, onCopy: () => _copyToClipboard(MockUser.phone, 'Telefono')),
                     _InfoRow('Email', MockUser.email, onCopy: () => _copyToClipboard(MockUser.email, 'Email')),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Cuenta section
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+              child: Text(
+                'Cuenta',
+                style: GoogleFonts.urbanist(fontSize: 16, fontWeight: FontWeight.w700, color: SayoColors.gris),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: SayoColors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: SayoColors.beige, width: 0.5),
+                ),
+                child: Column(
+                  children: [
+                    _MenuTile(
+                      Icons.receipt_long_rounded, 'Estados de Cuenta', SayoColors.blue,
+                      onTap: () => context.push('/estados-cuenta'),
+                    ),
+                    const Divider(height: 1, indent: 56),
+                    _MenuTile(
+                      Icons.swap_horiz_rounded, 'Movimientos', SayoColors.green,
+                      onTap: () => context.push('/movimientos'),
+                    ),
                   ],
                 ),
               ),

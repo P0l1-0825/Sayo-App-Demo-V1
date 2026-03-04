@@ -192,7 +192,7 @@ class DashboardScreen extends StatelessWidget {
                     ),
                   ),
                   TextButton(
-                    onPressed: () => _showAllTransactions(context),
+                    onPressed: () => context.push('/movimientos'),
                     child: Text(
                       'Ver todo',
                       style: GoogleFonts.urbanist(

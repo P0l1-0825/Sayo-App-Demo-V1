@@ -15,6 +15,8 @@ import 'features/adelanto/adelanto_screen.dart';
 import 'features/credito/credito_flow_screen.dart';
 import 'features/credito/credito_pago_screen.dart';
 import 'features/credito/credit_product_model.dart';
+import 'features/movimientos/movimientos_screen.dart';
+import 'features/estados_cuenta/estados_cuenta_screen.dart';
 import 'shared/widgets/main_shell.dart';
 
 final appRouter = GoRouter(
@@ -86,6 +88,14 @@ final appRouter = GoRouter(
           categoryId: extra['categoryId'] ?? '',
         );
       },
+    ),
+    GoRoute(
+      path: '/movimientos',
+      builder: (context, state) => const MovimientosScreen(),
+    ),
+    GoRoute(
+      path: '/estados-cuenta',
+      builder: (context, state) => const EstadosCuentaScreen(),
     ),
     ShellRoute(
       builder: (context, state, child) => MainShell(child: child),
