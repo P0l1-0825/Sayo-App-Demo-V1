@@ -17,6 +17,10 @@ import 'features/credito/credito_pago_screen.dart';
 import 'features/credito/credit_product_model.dart';
 import 'features/movimientos/movimientos_screen.dart';
 import 'features/estados_cuenta/estados_cuenta_screen.dart';
+import 'features/admin/admin_dashboard_screen.dart';
+import 'features/admin/admin_wallets_screen.dart';
+import 'features/admin/admin_credits_screen.dart';
+import 'features/admin/admin_wallet_detail_screen.dart';
 import 'shared/widgets/main_shell.dart';
 
 final appRouter = GoRouter(
@@ -96,6 +100,26 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/estados-cuenta',
       builder: (context, state) => const EstadosCuentaScreen(),
+    ),
+    // Admin routes
+    GoRoute(
+      path: '/admin',
+      builder: (context, state) => const AdminDashboardScreen(),
+    ),
+    GoRoute(
+      path: '/admin/wallets',
+      builder: (context, state) => const AdminWalletsScreen(),
+    ),
+    GoRoute(
+      path: '/admin/creditos',
+      builder: (context, state) => const AdminCreditsScreen(),
+    ),
+    GoRoute(
+      path: '/admin/wallets/detail',
+      builder: (context, state) {
+        final extra = state.extra as Map<String, String>? ?? {};
+        return AdminWalletDetailScreen(userId: extra['userId'] ?? 'USR001');
+      },
     ),
     ShellRoute(
       builder: (context, state, child) => MainShell(child: child),
