@@ -167,6 +167,42 @@ class AdminDashboardScreen extends StatelessWidget {
               ),
             ),
           ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+              child: Row(
+                children: [
+                  Expanded(child: _NavButton(
+                    icon: Icons.verified_user_rounded,
+                    label: 'KYC',
+                    subtitle: '${mockAdminAlerts.where((a) => a.type == 'info').length} pendientes',
+                    color: SayoColors.orange,
+                    onTap: () => context.push('/admin/kyc'),
+                  )),
+                  const SizedBox(width: 10),
+                  Expanded(child: _NavButton(
+                    icon: Icons.gavel_rounded,
+                    label: 'Cobranza',
+                    subtitle: '${AdminSummary.overdueCredits} en riesgo',
+                    color: SayoColors.red,
+                    onTap: () => context.push('/admin/cobranza'),
+                  )),
+                ],
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+              child: _NavButton(
+                icon: Icons.bar_chart_rounded,
+                label: 'Reportes y Analiticas',
+                subtitle: 'Metricas del portafolio',
+                color: SayoColors.purple,
+                onTap: () => context.push('/admin/reportes'),
+              ),
+            ),
+          ),
 
           // Users overview
           SliverToBoxAdapter(

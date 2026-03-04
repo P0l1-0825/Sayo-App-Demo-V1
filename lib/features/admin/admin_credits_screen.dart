@@ -303,14 +303,7 @@ class _AdminCreditsScreenState extends State<AdminCreditsScreen> {
                     child: OutlinedButton.icon(
                       onPressed: () {
                         Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Recordatorio enviado a ${credit.userName}', style: GoogleFonts.urbanist()),
-                            backgroundColor: SayoColors.blue,
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          ),
-                        );
+                        _showSendNotice(context, credit);
                       },
                       icon: const Icon(Icons.send_rounded, size: 16),
                       label: const Text('Enviar aviso'),
@@ -321,14 +314,7 @@ class _AdminCreditsScreenState extends State<AdminCreditsScreen> {
                     child: ElevatedButton.icon(
                       onPressed: () {
                         Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Plan de pago generado para ${credit.userName}', style: GoogleFonts.urbanist()),
-                            backgroundColor: SayoColors.green,
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          ),
-                        );
+                        _showPaymentPlan(context, credit);
                       },
                       icon: const Icon(Icons.description_rounded, size: 16),
                       label: const Text('Plan de pago'),
@@ -336,9 +322,210 @@ class _AdminCreditsScreenState extends State<AdminCreditsScreen> {
                   ),
                 ],
               ),
+
+            // View user detail
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                  context.push('/admin/wallets/detail', extra: {'userId': credit.userId});
+                },
+                icon: const Icon(Icons.person_rounded, size: 16),
+                label: const Text('Ver wallet del usuario'),
+              ),
+            ),
             const SizedBox(height: 8),
           ],
         ),
+      ),
+    );
+  }
+  void _showSendNotice(BuildContext context, CreditAssignment credit) {
+    String? selectedChannel;
+    final channels = [
+      {'id': 'sms', 'label': 'SMS', 'icon': Icons.sms_rounded, 'desc': 'Mensaje de texto al celular'},
+      {'id': 'email', 'label': 'Email', 'icon': Icons.email_rounded, 'desc': 'Correo electronico'},
+      {'id': 'push', 'label': 'Push', 'icon': Icons.notifications_rounded, 'desc': 'Notificacion en la app'},
+      {'id': 'all', 'label': 'Todos', 'icon': Icons.campaign_rounded, 'desc': 'Enviar por todos los canales'},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => StatefulBuilder(
+        builder: (ctx, setModalState) => Container(
+          padding: const EdgeInsets.all(24),
+          decoration: const BoxDecoration(
+            color: SayoColors.cream,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: SayoColors.beige, borderRadius: BorderRadius.circular(2)))),
+              const SizedBox(height: 16),
+              Text('Enviar aviso de cobranza', style: GoogleFonts.urbanist(fontSize: 16, fontWeight: FontWeight.w800, color: SayoColors.gris)),
+              const SizedBox(height: 4),
+              Text('${credit.userName} · ${credit.productLabel} · ${credit.statusLabel}', style: GoogleFonts.urbanist(fontSize: 12, color: SayoColors.grisMed)),
+              const SizedBox(height: 16),
+
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(color: SayoColors.orange.withValues(alpha: 0.06), borderRadius: BorderRadius.circular(12)),
+                child: Text(
+                  'Estimado/a ${credit.userName}, le recordamos que tiene un pago ${credit.status == 'vencido' ? 'vencido' : 'pendiente'} de ${formatMoney(credit.monthlyPayment)} correspondiente a su ${credit.productLabel}. Favor de regularizar su situacion.',
+                  style: GoogleFonts.urbanist(fontSize: 12, color: SayoColors.gris),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              Text('Canal de envio', style: GoogleFonts.urbanist(fontSize: 12, fontWeight: FontWeight.w600, color: SayoColors.grisMed)),
+              const SizedBox(height: 8),
+              ...channels.map((c) => GestureDetector(
+                onTap: () => setModalState(() => selectedChannel = c['id'] as String),
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 6),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: selectedChannel == c['id'] ? SayoColors.blue.withValues(alpha: 0.06) : SayoColors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: selectedChannel == c['id'] ? SayoColors.blue : SayoColors.beige, width: selectedChannel == c['id'] ? 1.5 : 0.5),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(c['icon'] as IconData, size: 18, color: selectedChannel == c['id'] ? SayoColors.blue : SayoColors.grisLight),
+                      const SizedBox(width: 10),
+                      Expanded(child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(c['label'] as String, style: GoogleFonts.urbanist(fontSize: 13, fontWeight: FontWeight.w600, color: SayoColors.gris)),
+                          Text(c['desc'] as String, style: GoogleFonts.urbanist(fontSize: 11, color: SayoColors.grisLight)),
+                        ],
+                      )),
+                    ],
+                  ),
+                ),
+              )),
+              const SizedBox(height: 12),
+
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: selectedChannel == null ? null : () {
+                    Navigator.pop(ctx);
+                    final channelLabel = channels.firstWhere((c) => c['id'] == selectedChannel)['label'];
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Aviso enviado a ${credit.userName} via $channelLabel', style: GoogleFonts.urbanist()),
+                        backgroundColor: SayoColors.blue,
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.send_rounded, size: 16),
+                  label: const Text('Enviar aviso'),
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showPaymentPlan(BuildContext context, CreditAssignment credit) {
+    int installments = 3;
+    final debtAmount = credit.monthlyPayment * credit.remainingMonths;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => StatefulBuilder(
+        builder: (ctx, setModalState) {
+          final installmentAmount = debtAmount / installments;
+          return Container(
+            padding: const EdgeInsets.all(24),
+            decoration: const BoxDecoration(
+              color: SayoColors.cream,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: SayoColors.beige, borderRadius: BorderRadius.circular(2)))),
+                const SizedBox(height: 16),
+                Text('Generar plan de pago', style: GoogleFonts.urbanist(fontSize: 16, fontWeight: FontWeight.w800, color: SayoColors.gris)),
+                const SizedBox(height: 4),
+                Text(credit.userName, style: GoogleFonts.urbanist(fontSize: 12, color: SayoColors.grisMed)),
+                const SizedBox(height: 16),
+
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(color: SayoColors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: SayoColors.beige, width: 0.5)),
+                  child: Column(
+                    children: [
+                      _DetailRow('Deuda total', formatMoney(debtAmount)),
+                      const SizedBox(height: 8),
+                      _DetailRow('Meses restantes', '${credit.remainingMonths}'),
+                      const SizedBox(height: 8),
+                      _DetailRow('Producto', credit.productLabel),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                Text('Parcialidades: $installments meses', style: GoogleFonts.urbanist(fontSize: 12, fontWeight: FontWeight.w600, color: SayoColors.grisMed)),
+                Slider(
+                  value: installments.toDouble(),
+                  min: 1,
+                  max: 12,
+                  divisions: 11,
+                  activeColor: SayoColors.green,
+                  onChanged: (v) => setModalState(() => installments = v.round()),
+                ),
+
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(color: SayoColors.green.withValues(alpha: 0.06), borderRadius: BorderRadius.circular(12)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Pago por parcialidad', style: GoogleFonts.urbanist(fontSize: 13, color: SayoColors.grisMed)),
+                      Text(formatMoney(installmentAmount), style: GoogleFonts.urbanist(fontSize: 16, fontWeight: FontWeight.w800, color: SayoColors.green)),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Plan de $installments parcialidades de ${formatMoney(installmentAmount)} generado', style: GoogleFonts.urbanist()),
+                          backgroundColor: SayoColors.green,
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.check_rounded, size: 16),
+                    label: const Text('Generar plan'),
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

@@ -21,6 +21,10 @@ import 'features/admin/admin_dashboard_screen.dart';
 import 'features/admin/admin_wallets_screen.dart';
 import 'features/admin/admin_credits_screen.dart';
 import 'features/admin/admin_wallet_detail_screen.dart';
+import 'features/admin/admin_kyc_screen.dart';
+import 'features/admin/admin_collections_screen.dart';
+import 'features/admin/admin_reports_screen.dart';
+import 'features/admin/admin_user_movements_screen.dart';
 import 'shared/widgets/main_shell.dart';
 
 final appRouter = GoRouter(
@@ -119,6 +123,28 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final extra = state.extra as Map<String, String>? ?? {};
         return AdminWalletDetailScreen(userId: extra['userId'] ?? 'USR001');
+      },
+    ),
+    GoRoute(
+      path: '/admin/kyc',
+      builder: (context, state) => const AdminKycScreen(),
+    ),
+    GoRoute(
+      path: '/admin/cobranza',
+      builder: (context, state) => const AdminCollectionsScreen(),
+    ),
+    GoRoute(
+      path: '/admin/reportes',
+      builder: (context, state) => const AdminReportsScreen(),
+    ),
+    GoRoute(
+      path: '/admin/movimientos',
+      builder: (context, state) {
+        final extra = state.extra as Map<String, String>? ?? {};
+        return AdminUserMovementsScreen(
+          userId: extra['userId'] ?? 'USR001',
+          userName: extra['userName'] ?? 'Usuario',
+        );
       },
     ),
     ShellRoute(
