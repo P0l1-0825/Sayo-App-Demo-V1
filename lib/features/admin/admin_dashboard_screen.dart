@@ -194,12 +194,24 @@ class AdminDashboardScreen extends StatelessWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-              child: _NavButton(
-                icon: Icons.bar_chart_rounded,
-                label: 'Reportes y Analiticas',
-                subtitle: 'Metricas del portafolio',
-                color: SayoColors.purple,
-                onTap: () => context.push('/admin/reportes'),
+              child: Row(
+                children: [
+                  Expanded(child: _NavButton(
+                    icon: Icons.bar_chart_rounded,
+                    label: 'Reportes',
+                    subtitle: 'Metricas',
+                    color: SayoColors.purple,
+                    onTap: () => context.push('/admin/reportes'),
+                  )),
+                  const SizedBox(width: 10),
+                  Expanded(child: _NavButton(
+                    icon: Icons.auto_awesome,
+                    label: 'AI Risk',
+                    subtitle: 'Scoring & alertas',
+                    color: SayoColors.cafe,
+                    onTap: () => context.push('/admin/ai-risk'),
+                  )),
+                ],
               ),
             ),
           ),

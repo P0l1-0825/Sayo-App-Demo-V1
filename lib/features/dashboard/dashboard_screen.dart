@@ -165,6 +165,44 @@ class DashboardScreen extends StatelessWidget {
             ),
           ),
 
+          // AI Insights banner
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+              child: GestureDetector(
+                onTap: () => context.push('/insights'),
+                child: Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [SayoColors.purple.withValues(alpha: 0.08), SayoColors.blue.withValues(alpha: 0.06)],
+                    ),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: SayoColors.purple.withValues(alpha: 0.2), width: 0.5),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(color: SayoColors.purple.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+                        child: const Icon(Icons.auto_awesome, color: SayoColors.purple, size: 18),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Insights Financieros', style: GoogleFonts.urbanist(fontSize: 13, fontWeight: FontWeight.w700, color: SayoColors.purple)),
+                          Text('Tu IA analizo tus finanzas. Toca para ver.', style: GoogleFonts.urbanist(fontSize: 11, color: SayoColors.grisMed)),
+                        ],
+                      )),
+                      const Icon(Icons.chevron_right_rounded, size: 20, color: SayoColors.purple),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
           // Credit widget
           SliverToBoxAdapter(
             child: Padding(
