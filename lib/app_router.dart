@@ -10,6 +10,7 @@ import 'features/credito/credito_screen.dart';
 import 'features/perfil/perfil_screen.dart';
 import 'features/servicios/servicios_screen.dart';
 import 'features/servicios/pago_flow_screen.dart';
+import 'features/transferencias/transferencia_screen.dart';
 import 'shared/widgets/main_shell.dart';
 
 final appRouter = GoRouter(
@@ -30,6 +31,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/kyc',
       builder: (context, state) => const KycScreen(),
+    ),
+    GoRoute(
+      path: '/transferir',
+      builder: (context, state) => const TransferenciaScreen(),
     ),
     GoRoute(
       path: '/servicios',

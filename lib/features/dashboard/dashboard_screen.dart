@@ -219,7 +219,7 @@ class DashboardScreen extends StatelessWidget {
             ),
           ),
 
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          const SliverToBoxAdapter(child: SizedBox(height: 24)),
         ],
       ),
     );
@@ -259,12 +259,7 @@ class DashboardScreen extends StatelessWidget {
   }
 
   void _showTransferSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => const _TransferSheet(),
-    );
+    context.push('/transferir');
   }
 
   void _showPaySheet(BuildContext context) {

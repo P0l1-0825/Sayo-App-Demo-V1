@@ -32,7 +32,7 @@ class MainShell extends StatelessWidget {
 
     return Scaffold(
       body: child,
-      extendBody: true,
+      extendBody: false,
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: SayoColors.white,

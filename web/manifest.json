@@ -1,11 +1,11 @@
 {
-    "name": "sayo_app",
-    "short_name": "sayo_app",
+    "name": "SAYO - Tu banco digital",
+    "short_name": "SAYO",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#F9F7F4",
+    "theme_color": "#472913",
+    "description": "SAYO - Tu banco digital inteligente",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

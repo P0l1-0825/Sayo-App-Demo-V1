@@ -146,7 +146,7 @@ class _TarjetasScreenState extends State<TarjetasScreen> {
                   ),
                   _CardWidget(
                     type: 'Fisica', last4: '9156', showCvv: false, cvv: '291', expiry: '07/29',
-                    gradient: [SayoColors.gris, SayoColors.gris.withValues(alpha: 0.8)], isLocked: false,
+                    gradient: const [Color(0xFF1A1A2E), Color(0xFF16213E)], isLocked: false,
                   ),
                 ],
               ),
@@ -251,7 +251,7 @@ class _TarjetasScreenState extends State<TarjetasScreen> {
             ),
           ),
 
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          const SliverToBoxAdapter(child: SizedBox(height: 24)),
         ],
       ),
     );
