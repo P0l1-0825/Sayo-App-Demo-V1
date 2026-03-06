@@ -18,12 +18,7 @@ class MainShell extends StatelessWidget {
   }
 
   void _openSayoAI(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => const _SayoAISheet(),
-    );
+    context.push('/sayo-ai');
   }
 
   @override

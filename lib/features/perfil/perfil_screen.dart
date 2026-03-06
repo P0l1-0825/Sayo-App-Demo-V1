@@ -703,16 +703,17 @@ class _PerfilScreenState extends State<PerfilScreen> {
                   children: [
                     _MenuTile(
                       Icons.auto_awesome, 'SAYO AI · Asistente', SayoColors.purple,
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: const Text('Usa el boton central del menu para abrir SAYO AI'),
-                            backgroundColor: SayoColors.purple,
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          ),
-                        );
-                      },
+                      onTap: () => context.push('/sayo-ai'),
+                    ),
+                    const Divider(height: 1, indent: 56),
+                    _MenuTile(
+                      Icons.qr_code_rounded, 'QR / CoDi', SayoColors.blue,
+                      onTap: () => context.push('/qr'),
+                    ),
+                    const Divider(height: 1, indent: 56),
+                    _MenuTile(
+                      Icons.stars_rounded, 'Marketplace SAYO', SayoColors.orange,
+                      onTap: () => context.push('/marketplace'),
                     ),
                     const Divider(height: 1, indent: 56),
                     _MenuTile(

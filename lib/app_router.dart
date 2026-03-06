@@ -17,6 +17,9 @@ import 'features/credito/credito_pago_screen.dart';
 import 'features/credito/credit_product_model.dart';
 import 'features/movimientos/movimientos_screen.dart';
 import 'features/estados_cuenta/estados_cuenta_screen.dart';
+import 'features/sayo_ai/sayo_ai_screen.dart';
+import 'features/qr/qr_screen.dart';
+import 'features/marketplace/marketplace_screen.dart';
 import 'shared/widgets/main_shell.dart';
 
 final appRouter = GoRouter(
@@ -96,6 +99,18 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/estados-cuenta',
       builder: (context, state) => const EstadosCuentaScreen(),
+    ),
+    GoRoute(
+      path: '/sayo-ai',
+      builder: (context, state) => const SayoAIScreen(),
+    ),
+    GoRoute(
+      path: '/qr',
+      builder: (context, state) => const QrScreen(),
+    ),
+    GoRoute(
+      path: '/marketplace',
+      builder: (context, state) => const MarketplaceScreen(),
     ),
     ShellRoute(
       builder: (context, state, child) => MainShell(child: child),

@@ -267,46 +267,7 @@ class DashboardScreen extends StatelessWidget {
   }
 
   void _showQRSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _buildSheet(
-        title: 'Cobrar con QR',
-        icon: Icons.qr_code_rounded,
-        iconColor: SayoColors.purple,
-        children: [
-          const SizedBox(height: 8),
-          Center(
-            child: Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                color: SayoColors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: SayoColors.beige),
-              ),
-              child: const Center(
-                child: Icon(Icons.qr_code_2_rounded, size: 150, color: SayoColors.gris),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Center(
-            child: Text(
-              'Muestra este codigo para recibir pagos',
-              style: GoogleFonts.urbanist(fontSize: 13, color: SayoColors.grisMed),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Center(
-            child: Text(
-              MockUser.fullName,
-              style: GoogleFonts.urbanist(fontSize: 15, fontWeight: FontWeight.w700, color: SayoColors.gris),
-            ),
-          ),
-        ],
-      ),
-    );
+    context.push('/qr');
   }
 
   void _showNominaSheet(BuildContext context) {
