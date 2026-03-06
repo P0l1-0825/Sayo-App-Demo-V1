@@ -165,6 +165,82 @@ class DashboardScreen extends StatelessWidget {
             ),
           ),
 
+          // AI Insights banner
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+              child: GestureDetector(
+                onTap: () => context.push('/insights'),
+                child: Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [SayoColors.purple.withValues(alpha: 0.08), SayoColors.blue.withValues(alpha: 0.06)],
+                    ),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: SayoColors.purple.withValues(alpha: 0.2), width: 0.5),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(color: SayoColors.purple.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+                        child: const Icon(Icons.auto_awesome, color: SayoColors.purple, size: 18),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Insights Financieros', style: GoogleFonts.urbanist(fontSize: 13, fontWeight: FontWeight.w700, color: SayoColors.purple)),
+                          Text('Tu IA analizo tus finanzas. Toca para ver.', style: GoogleFonts.urbanist(fontSize: 11, color: SayoColors.grisMed)),
+                        ],
+                      )),
+                      const Icon(Icons.chevron_right_rounded, size: 20, color: SayoColors.purple),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Marketplace banner
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+              child: GestureDetector(
+                onTap: () => context.push('/marketplace'),
+                child: Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [SayoColors.orange.withValues(alpha: 0.08), SayoColors.green.withValues(alpha: 0.06)],
+                    ),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: SayoColors.orange.withValues(alpha: 0.2), width: 0.5),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(color: SayoColors.orange.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+                        child: const Icon(Icons.card_giftcard_rounded, color: SayoColors.orange, size: 18),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('SAYO Points', style: GoogleFonts.urbanist(fontSize: 13, fontWeight: FontWeight.w700, color: SayoColors.orange)),
+                          Text('Canjea tus puntos por recompensas', style: GoogleFonts.urbanist(fontSize: 11, color: SayoColors.grisMed)),
+                        ],
+                      )),
+                      const Icon(Icons.chevron_right_rounded, size: 20, color: SayoColors.orange),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
           // Credit widget
           SliverToBoxAdapter(
             child: Padding(
@@ -252,7 +328,7 @@ class DashboardScreen extends StatelessWidget {
       case 'Pagar':
         _showPaySheet(context);
       case 'Cobrar QR':
-        _showQRSheet(context);
+        context.push('/qr');
       case 'Nomina':
         context.push('/adelanto');
     }
@@ -264,155 +340,6 @@ class DashboardScreen extends StatelessWidget {
 
   void _showPaySheet(BuildContext context) {
     context.push('/servicios');
-  }
-
-  void _showQRSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _buildSheet(
-        title: 'Cobrar con QR',
-        icon: Icons.qr_code_rounded,
-        iconColor: SayoColors.purple,
-        children: [
-          const SizedBox(height: 8),
-          Center(
-            child: Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                color: SayoColors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: SayoColors.beige),
-              ),
-              child: const Center(
-                child: Icon(Icons.qr_code_2_rounded, size: 150, color: SayoColors.gris),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Center(
-            child: Text(
-              'Muestra este codigo para recibir pagos',
-              style: GoogleFonts.urbanist(fontSize: 13, color: SayoColors.grisMed),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Center(
-            child: Text(
-              MockUser.fullName,
-              style: GoogleFonts.urbanist(fontSize: 15, fontWeight: FontWeight.w700, color: SayoColors.gris),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showNominaSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _buildSheet(
-        title: 'Nomina dispersa',
-        icon: Icons.payments_rounded,
-        iconColor: SayoColors.orange,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: SayoColors.green.withValues(alpha: 0.06),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.check_circle_rounded, color: SayoColors.green, size: 20),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'Tu cuenta SAYO esta habilitada para recibir nomina',
-                    style: GoogleFonts.urbanist(fontSize: 13, color: SayoColors.green, fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          _NominaInfoRow('CLABE', formatClabe(MockUser.clabe)),
-          _NominaInfoRow('Banco', 'Solvendom (SAYO)'),
-          _NominaInfoRow('Beneficiario', MockUser.fullName),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: () {
-              Clipboard.setData(const ClipboardData(text: MockUser.clabe));
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('CLABE copiada para tu empresa', style: GoogleFonts.urbanist()),
-                  backgroundColor: SayoColors.green,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-              );
-            },
-            icon: const Icon(Icons.copy_rounded, size: 18),
-            label: const Text('Copiar datos para nomina'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showAllTransactions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => DraggableScrollableSheet(
-        initialChildSize: 0.85,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
-        builder: (context, scrollController) => Container(
-          decoration: const BoxDecoration(
-            color: SayoColors.cream,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-          ),
-          child: Column(
-            children: [
-              const SizedBox(height: 12),
-              Container(width: 40, height: 4, decoration: BoxDecoration(color: SayoColors.beige, borderRadius: BorderRadius.circular(2))),
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Todos los movimientos', style: GoogleFonts.urbanist(fontSize: 18, fontWeight: FontWeight.w800, color: SayoColors.gris)),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: const Icon(Icons.close_rounded, color: SayoColors.grisMed),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  controller: scrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  itemCount: mockTransactions.length,
-                  itemBuilder: (ctx, i) => GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _showTransactionDetail(context, mockTransactions[i]);
-                    },
-                    child: _TransactionTile(tx: mockTransactions[i]),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   void _showTransactionDetail(BuildContext context, Transaction tx) {
@@ -538,121 +465,7 @@ class DashboardScreen extends StatelessWidget {
   }
 }
 
-// --- TRANSFER SHEET (Stateful for input) ---
-
-class _TransferSheet extends StatefulWidget {
-  const _TransferSheet();
-  @override
-  State<_TransferSheet> createState() => _TransferSheetState();
-}
-
-class _TransferSheetState extends State<_TransferSheet> {
-  final _clabeCtrl = TextEditingController();
-  final _montoCtrl = TextEditingController();
-  final _conceptoCtrl = TextEditingController();
-
-  @override
-  void dispose() {
-    _clabeCtrl.dispose();
-    _montoCtrl.dispose();
-    _conceptoCtrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: SayoColors.cream,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: SayoColors.beige, borderRadius: BorderRadius.circular(2)))),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(color: SayoColors.blue.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
-                  child: const Icon(Icons.send_rounded, color: SayoColors.blue, size: 20),
-                ),
-                const SizedBox(width: 12),
-                Text('Transferir SPEI', style: GoogleFonts.urbanist(fontSize: 18, fontWeight: FontWeight.w800, color: SayoColors.gris)),
-              ],
-            ),
-            const SizedBox(height: 20),
-            _InputField(controller: _clabeCtrl, label: 'CLABE destino', hint: '18 digitos', keyboardType: TextInputType.number),
-            const SizedBox(height: 12),
-            _InputField(controller: _montoCtrl, label: 'Monto', hint: '\$0.00', keyboardType: TextInputType.number, prefix: '\$ '),
-            const SizedBox(height: 12),
-            _InputField(controller: _conceptoCtrl, label: 'Concepto', hint: 'Opcional'),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Transferencia enviada', style: GoogleFonts.urbanist()),
-                    backgroundColor: SayoColors.green,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  ),
-                );
-              },
-              child: const Text('Enviar transferencia'),
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 // --- REUSABLE WIDGETS ---
-
-class _InputField extends StatelessWidget {
-  final TextEditingController controller;
-  final String label;
-  final String hint;
-  final TextInputType? keyboardType;
-  final String? prefix;
-
-  const _InputField({required this.controller, required this.label, required this.hint, this.keyboardType, this.prefix});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: GoogleFonts.urbanist(fontSize: 12, fontWeight: FontWeight.w600, color: SayoColors.grisMed)),
-        const SizedBox(height: 6),
-        TextField(
-          controller: controller,
-          keyboardType: keyboardType,
-          style: GoogleFonts.urbanist(fontSize: 15, fontWeight: FontWeight.w600, color: SayoColors.gris),
-          decoration: InputDecoration(
-            hintText: hint,
-            prefixText: prefix,
-            hintStyle: GoogleFonts.urbanist(fontSize: 15, color: SayoColors.grisLight),
-            filled: true,
-            fillColor: SayoColors.white,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: SayoColors.beige, width: 0.5)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: SayoColors.beige, width: 0.5)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: SayoColors.cafe, width: 1.5)),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 class _HeaderIcon extends StatelessWidget {
   final IconData icon;
@@ -842,49 +655,6 @@ class _NotifTile extends StatelessWidget {
   }
 }
 
-class _ServiceTile extends StatelessWidget {
-  final String title, subtitle;
-  final IconData icon;
-  final Color color;
-  const _ServiceTile(this.title, this.subtitle, this.icon, this.color);
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Pago de $title · Proximamente', style: GoogleFonts.urbanist()),
-            backgroundColor: SayoColors.cafe,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          ),
-        );
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(color: SayoColors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: SayoColors.beige, width: 0.5)),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
-              child: Icon(icon, color: color, size: 18),
-            ),
-            const SizedBox(width: 12),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(title, style: GoogleFonts.urbanist(fontSize: 14, fontWeight: FontWeight.w600, color: SayoColors.gris)),
-              Text(subtitle, style: GoogleFonts.urbanist(fontSize: 11, color: SayoColors.grisLight)),
-            ])),
-            const Icon(Icons.chevron_right_rounded, size: 20, color: SayoColors.grisLight),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _DetailRow extends StatelessWidget {
   final String label, value;
   const _DetailRow(this.label, this.value);
@@ -900,20 +670,3 @@ class _DetailRow extends StatelessWidget {
   }
 }
 
-class _NominaInfoRow extends StatelessWidget {
-  final String label, value;
-  const _NominaInfoRow(this.label, this.value);
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: GoogleFonts.urbanist(fontSize: 13, color: SayoColors.grisLight)),
-          Text(value, style: GoogleFonts.urbanist(fontSize: 13, fontWeight: FontWeight.w600, color: SayoColors.gris)),
-        ],
-      ),
-    );
-  }
-}

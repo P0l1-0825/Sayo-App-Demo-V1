@@ -689,6 +689,28 @@ class _PerfilScreenState extends State<PerfilScreen> {
             ),
           ),
 
+          // Admin panel
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: SayoColors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: SayoColors.beige, width: 0.5),
+                ),
+                child: Column(
+                  children: [
+                    _MenuTile(
+                      Icons.admin_panel_settings_rounded, 'Mesa de Control', SayoColors.gris,
+                      onTap: () => context.push('/admin'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
           // Legal + help — tappable
           SliverToBoxAdapter(
             child: Padding(

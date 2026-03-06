@@ -100,12 +100,86 @@ class _TarjetasScreenState extends State<TarjetasScreen> {
   }
 
   void _onWallet(String wallet) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$wallet · Proximamente', style: GoogleFonts.urbanist()),
-        backgroundColor: SayoColors.cafe,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    final last4 = _selectedCard == 0 ? '4832' : '9156';
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: const BoxDecoration(
+          color: SayoColors.cream,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: SayoColors.beige, borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 20),
+            Container(
+              width: 56, height: 56,
+              decoration: BoxDecoration(
+                color: (wallet == 'Apple Pay' ? SayoColors.gris : SayoColors.blue).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(
+                wallet == 'Apple Pay' ? Icons.apple : Icons.g_mobiledata_rounded,
+                color: wallet == 'Apple Pay' ? SayoColors.gris : SayoColors.blue,
+                size: 28,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text('Agregar a $wallet', style: GoogleFonts.urbanist(fontSize: 18, fontWeight: FontWeight.w800, color: SayoColors.gris)),
+            const SizedBox(height: 8),
+            Text(
+              'Tu tarjeta SAYO terminada en $last4 se vinculara a $wallet para pagos sin contacto.',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.urbanist(fontSize: 13, color: SayoColors.grisMed),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(color: SayoColors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: SayoColors.beige, width: 0.5)),
+              child: Column(
+                children: [
+                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Text('Tarjeta', style: GoogleFonts.urbanist(fontSize: 13, color: SayoColors.grisLight)),
+                    Text('SAYO •••• $last4', style: GoogleFonts.urbanist(fontSize: 13, fontWeight: FontWeight.w600, color: SayoColors.gris)),
+                  ]),
+                  const SizedBox(height: 8),
+                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Text('Tipo', style: GoogleFonts.urbanist(fontSize: 13, color: SayoColors.grisLight)),
+                    Text(_selectedCard == 0 ? 'Virtual' : 'Fisica', style: GoogleFonts.urbanist(fontSize: 13, fontWeight: FontWeight.w600, color: SayoColors.gris)),
+                  ]),
+                  const SizedBox(height: 8),
+                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Text('Wallet', style: GoogleFonts.urbanist(fontSize: 13, color: SayoColors.grisLight)),
+                    Text(wallet, style: GoogleFonts.urbanist(fontSize: 13, fontWeight: FontWeight.w600, color: SayoColors.gris)),
+                  ]),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Tarjeta vinculada a $wallet exitosamente', style: GoogleFonts.urbanist()),
+                    backgroundColor: SayoColors.green,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                );
+              },
+              child: Text('Vincular a $wallet'),
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancelar', style: GoogleFonts.urbanist(fontSize: 14, fontWeight: FontWeight.w600, color: SayoColors.grisMed)),
+            ),
+          ],
+        ),
       ),
     );
   }
